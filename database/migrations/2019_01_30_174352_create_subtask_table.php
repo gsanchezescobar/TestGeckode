@@ -18,6 +18,7 @@ class CreateSubtaskTable extends Migration
             $table->integer('task')->unsigned();
             $table->string('name');
             $table->string('description');
+            $table->integer('done');
             $table->timestamps();
             $table->foreign('task')->references('id')->on('task');
         });

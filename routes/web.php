@@ -14,3 +14,15 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+// 
+Route::get('/', function () {
+    return view('index');
+});
+
+// Route::get('Task','TaskController@index')->name('task.show');
+
+Route::resource('Task','TaskController',['except'=>['create','show','edit'] ]);
+
+Route::resource('SubTask','TaskController',['except'=>['create','show','edit'] ]);
