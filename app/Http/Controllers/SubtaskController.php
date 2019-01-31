@@ -12,53 +12,60 @@ class SubtaskController extends Controller
     {
         $data = $request->all();
 
-        $task = Subtask::create([
+        $subtask = Subtask::create([
             'task' => $data['task'], 
             'name' => $data['name'], 
             'description' => $data['description'],
             'done' => $data['done']
         ]);
 
-        if($task){
-            return 'se creo correctamente';
+        if($subtask){
+            return 'ok';
         }else{
-            return 'no se creo el registro';
+            return 'error';
         }
         
     }
 
     public function update(Request $request, $id)
     {
-        $task = Subtask::findOrFail($id);
+        $subtask = Subtask::findOrFail($id);
 
         $data = $request->all();
 
-        $task->update([
-            'task' => $data['task'], 
-            'name' => $data['name'], 
-            'description' => $data['description'],
-            'done' => $data['done']
-        ]);
 
-        if($task){
-            return 'se actualizo correctamente';
+        if(isset($data['done']) && isset($data['name']) && isset($data['description'])){
+            $subtask->update([
+                'name' => $data['name'], 
+                'description' => $data['description'],
+                'done' => $data['done']
+            ]);
         }else{
-            return 'no se actualizo el registro';
+            $res = 0;
+            if($subtask->done == 0){
+                $res = 1;
+            }else{
+                $res = 0;
+            }
+
+            $subtask->update([
+                'done' => $res
+            ]);
+        }
+
+        if($subtask){
+            return 'ok';
+        }else{
+            return 'error';
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $loteria = Subtask::findOrFail($id);
+        $sub = Subtask::findOrFail($id);
 
-        $loteria->delete();
+        $sub->delete();
 
-        return 'se elimino correctamente';
+        return 'ok';
     }
 }

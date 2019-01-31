@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Task;
 use App\Subtask;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -15,7 +16,14 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $task = Task::with('subtask')->get()->toarray();
+        $task = Task::where('done',0)->with('subtask')->get()->toarray();
+// select('name', 'description','done',"date_format('created_at', '%d/%m/%Y')")->
+        return $task;
+    }
+
+    public function show($id)
+    {
+        $task = Task::findOrFail($id);
 
         return $task;
     }
@@ -31,9 +39,9 @@ class TaskController extends Controller
         ]);
 
         if($task){
-            return 'se creo correctamente';
+            return 'ok';
         }else{
-            return 'no se creo el registro';
+            return 'error';
         }
         
     }
@@ -44,16 +52,27 @@ class TaskController extends Controller
 
         $data = $request->all();
 
-        $task->update([
-            'name' => $data['name'], 
-            'description' => $data['description'],
-            'done' => $data['done']
-        ]);
+        if($data['done'] == 1){
+            $this->updatesubtask($id);
+        }
+
+        if(isset($data['name']) && isset($data['description'])){
+            $task->update([
+                'name' => $data['name'], 
+                'description' => $data['description'],
+                'done' => $data['done']
+            ]);
+        }else{
+            $task->update([
+                'done' => $data['done']
+            ]);
+        }
+        
 
         if($task){
-            return 'se actualizo correctamente';
+            return 'ok';
         }else{
-            return 'no se actualizo el registro';
+            return 'error';
         }
     }
 
@@ -65,11 +84,26 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        $loteria = Task::findOrFail($id);
+        $this->destroysubtask($id);
 
-        $loteria->delete();
+        $task = Task::findOrFail($id);
 
-        return 'se elimino correctamente';
+        $task->delete();
+
+        return 'ok';
+    }
+
+    function destroysubtask($id)
+    {
+        $sub = DB::delete('DELETE FROM subtask WHERE task=?', [$id]);
+    }
+
+    function updatesubtask($id)
+    {
+        $subs = Subtask::where('task',$id)->get();
+        if(count($subs)>0){
+            $sub = DB::update('UPDATE subtask SET done=1 WHERE task=?', [$id]);
+        }
     }
 
     
