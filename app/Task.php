@@ -12,7 +12,7 @@ class Task extends Model
     protected $fillable = ['name','description','done','created_at'];
 
     protected $casts = [
-        'created_at' => 'datetime:d-F-Y',
+        'created_at' => 'datetime:d-F/Y',
     ];
 
     public function subtask(){
